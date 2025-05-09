@@ -178,7 +178,7 @@ void do_thread_test()
     for (int i = 0; i < number_of_writer_threads; ++i)
     {
         writeThreads[i] = 
-        std::make_unique<std::thread> ([&fifo, &atomic_counter, highest_write]()
+        std::make_unique<std::thread> ([&fifo, &atomic_counter]()
         {
             while (true)
             {
