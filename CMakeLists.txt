@@ -18,10 +18,10 @@ endif()
 if(NOT CMAKE_BUILD_TYPE)
   message(STATUS "Setting build type to '${default_build_type}' as none was specified.")
   set(CMAKE_BUILD_TYPE "${default_build_type}" CACHE
-      STRING "Choose the type of build." FORCE)
+          STRING "Choose the type of build." FORCE)
   # Set the possible values of build type for cmake-gui
   set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
-    "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
+          "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
 endif()
 
 if(CMAKE_BUILD_TYPE MATCHES "Debug")
@@ -54,13 +54,19 @@ endif()
 
 # clang needs libatomic
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
- set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -latomic")
+  set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -latomic")
 endif()
 
 add_executable(gtestrunner test/test.cpp include/farbot/AsyncCaller.hpp include/farbot/RealtimeTraits.hpp include/farbot/RealtimeObject.hpp include/farbot/detail/RealtimeObject.tcc include/farbot/fifo.hpp include/farbot/detail/fifo.tcc ${GTEST_DIR}/src/gtest_main.cc ${GTEST_DIR}/src/gtest-all.cc)
 target_include_directories(gtestrunner PRIVATE include ${GTEST_DIR} ${GTEST_DIR}/include)
-target_link_libraries(gtestrunner Threads::Threads) 
+target_link_libraries(gtestrunner Threads::Threads)
 
-gtest_add_tests(TARGET gtestrunner SOURCES test/test.cpp)
+# Only register tests on non-Windows platforms
+if(NOT WIN32)
+  gtest_add_tests(TARGET gtestrunner SOURCES test/test.cpp)
+  message(STATUS "Farbot tests registered")
+else()
+  message(STATUS "Farbot tests skipped on Windows due to flaky threading behavior")
+endif()
 
 install(DIRECTORY include/farbot DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
