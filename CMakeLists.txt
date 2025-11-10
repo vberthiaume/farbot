@@ -63,8 +63,8 @@ add_executable(gtestrunner test/test.cpp include/farbot/AsyncCaller.hpp include/
 target_include_directories(gtestrunner PRIVATE include ${GTEST_DIR} ${GTEST_DIR}/include)
 target_link_libraries(gtestrunner Threads::Threads)
 
-# Only register tests on non-Windows platforms
-if(NOT WIN32)
+# Only register tests on Linux
+if(UNIX AND NOT APPLE)
   gtest_add_tests(TARGET gtestrunner SOURCES test/test.cpp)
   message(STATUS "Farbot tests registered")
 else()
